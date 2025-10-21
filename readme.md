@@ -91,7 +91,7 @@ git push && git push --tags
 
 ### 📜 License
 
-MIT License © 2025 — Created by Tepong Agapito
+MIT License © 2025 — Created by Cristino Agapito Jr
 
 ### 💡 Tip
 
