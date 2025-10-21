@@ -59,24 +59,30 @@ File	Purpose
 VERSION	Tracks the current semantic version
 CHANGELOG.md	Stores release notes, auto-updated on each bump
 🪄 Example Workflow
-# Patch bump with commit + tag
+#### Patch bump with commit + tag
+```bash
 python version_manager.py "Fix minor bug" patch
+```
 
-# Minor bump for new features
+#### Minor bump for new features
+```bash
 python version_manager.py "Add new command-line options" minor
+```
 
-# Preview changes without saving
+#### Preview changes without saving
+```bash
 python version_manager.py "Test changelog formatting" --dry-run
+```
 
 ### 🏷️ Git Integration
 
 Each bump automatically:
 
-Adds VERSION and CHANGELOG.md
+- Adds VERSION and CHANGELOG.md
 
-Commits with your changelog message and version
+- Commits with your changelog message and version
 
-Creates a Git tag (e.g., v1.2.0)
+- Creates a Git tag (e.g., v1.2.0)
 
 You can push these as usual:
 ```bash
