@@ -71,10 +71,10 @@ The script is configured to update version strings in VERSION, CHANGELOG.md, and
 🪄 Example Workflow
 |Action | Command | Result |
 |-------|---------|--------|
-|New Feature Release | "python version_manager.py ""Implemented OAuth login"" minor --category feature" | "Bumps version (e.g., 1.2.3 → 1.3.0), updates files, commits, tags, and pushes." |
-|Bug Fix Release | "python version_manager.py ""Fixed memory leak in parser"" --category fix" | "Bumps patch version (default), updates files, commits, tags, and pushes." |
-|Multi-line Changelog | "python version_manager.py """"""Added CLI options and improved validation.\n- Supports dry-run\n- Handles invalid VERSION formats"""""" patch" | Uses multi-line string for detailed release notes. |
-|Safe Preview | "python version_manager.py ""Testing preview"" minor --dry-run" | Shows all file and Git actions without changing anything. |
+|New Feature Release | ```python version_manager.py "Implemented OAuth login" minor --category feature``` | "Bumps version (e.g., 1.2.3 → 1.3.0), updates files, commits, tags, and pushes." |
+|Bug Fix Release | ```python version_manager.py "Fixed memory leak in parser" --category fix``` | "Bumps patch version (default), updates files, commits, tags, and pushes." |
+|Multi-line Changelog | ```python version_manager.py """Added CLI options and improved validation.\n- Supports dry-run\n- Handles invalid VERSION formats""" patch``` | Uses multi-line string for detailed release notes. |
+|Safe Preview | ```python version_manager.py "Testing preview" minor --dry-run``` | Shows all file and Git actions without changing anything. |
 
 ### 🏷️ Full Git Integration
 
