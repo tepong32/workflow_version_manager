@@ -35,7 +35,7 @@ python version_manager.py "Initial release of version_manager.py" minor -c refac
 ```
 #### Multiline changelog example
 ```
-python version_manager.py """\
+python version_manager.py """
 Added new CLI options and improved validation.
 - Supports dry-run previews
 - Handles invalid VERSION formats gracefully
@@ -78,9 +78,9 @@ The script is configured to update version strings in VERSION, CHANGELOG.md, and
 
 ### 🏷️ Full Git Integration
 
-- You no longer need to run manual push commands!
-- On success, the script automatically:
-- Ensures the Git working directory is clean.
+You no longer need to run manual push commands! (for versioning-related files only)
+On success, the script automatically:
+- Ensures the Git working directory is clean before running git commands.
 - Adds all versioned files (VERSION, CHANGELOG.md, setup.py, etc.).
 - Commits with your message and new version number.
 - Creates a Git tag (e.g., v1.2.0).
