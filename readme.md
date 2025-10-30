@@ -26,12 +26,12 @@ This tool ensures a traceable version history with minimal manual effort.
 
 #### Basic command
 ```bash
-python version_manager.py "Commit message" [major|minor|patch]
+python version_manager.py "MESSAGE" [BUMP_TYPE] --category CATEGORY --dry-run
 ```
 
 #### Example
 ```bash
-python version_manager.py "Initial release of version_manager.py" minor -c refactor
+python version_manager.py "Initial release of version_manager.py" minor -c refactor -d 
 ```
 #### Multiline changelog example
 ```
@@ -51,8 +51,8 @@ python version_manager.py "Testing preview" patch --dry-run
 |---------|---------|---------------|
 |"MESSAGE" | The required commit message and changelog text. | "Optimized API call handler" |
 |[BUMP_TYPE] | (Optional) Which version segment to increment. Defaults to patch. |	minor, major, patch|
-|--category CATEGORY |	(Optional) The header to use in CHANGELOG.md. Defaults to feature. | fix, refactor, chore, docs |
-|--dry-run | (Optional) Shows what would happen without writing files or running Git commands. | --dry-run |
+|--category (-c) CATEGORY |	(Optional) The header to use in CHANGELOG.md. Defaults to feature. | fix, refactor, chore, docs |
+|--dry-run (-d) | (Optional) Shows what would happen without writing files or running Git commands. | --dry-run |
 
 ### 🧰 Requirements
 
@@ -89,7 +89,7 @@ The script is configured to update version strings in VERSION, CHANGELOG.md, and
 
 ### 📜 License
 
-MIT License © 2025 — Created by Cristino Agapito Jr
+MIT License © 2025 — Created by tEppy™ (Cristino Agapito Jr)
 
 ### 💡 Tip
 
