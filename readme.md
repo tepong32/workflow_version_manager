@@ -1,48 +1,43 @@
 # 🚀 Workflow Version Manager
 
-A lightweight, portable toolkit for **versioning, changelog generation, and workflow automation** — designed for developers who want fast, consistent, and repeatable release processes.
+A lightweight, portable toolkit for **versioning, changelog automation, and repository bootstrapping** — designed for fast, consistent, AI-assisted development workflows.
 
 ---
 
-## ✨ Core Features
+## ✨ Core Tools
 
-### 📦 Version Manager (`version_manager.py`)
+### 📦 `version_manager.py`
 
 * Semantic versioning (patch / minor / major)
-* Auto-generates structured changelog entries
+* Auto-generated structured changelog
 * Categorized updates (feature, fix, refactor, etc.)
 * Updates version across multiple files
-* Git integration:
-
-  * add
-  * commit
-  * tag
-  * push
-* Dry-run mode for safe previews
+* Git integration (add → commit → tag → push)
+* Dry-run preview mode
 
 ---
 
-### ⚙️ Auto Merge Tool (`auto_merge.py`)
+### ⚙️ `auto_merge.py`
 
-* Safely resolves Git merge conflicts
-* Designed for AI-assisted workflows
-* Protects critical files by default
-* Optional aggressive mode for full auto-resolution
-
----
-
-### 🧱 Repo Bootstrap (`repo_bootstrap.py`)
-
-* Instantly prepares any new repository
-* Copies your toolset into `/tools`
-* Generates a standard `AGENTS.md`
-* Ensures consistent development environment across projects
+* Safe Git merge conflict resolution
+* Designed for AI-generated diffs
+* Protects sensitive files by default
+* Optional aggressive (`--unsafe`) mode
 
 ---
 
-# 📁 Project Structure (Recommended)
+### 🧱 `repo_bootstrap.py`
 
-```
+* One-command project setup
+* Copies tools into `/tools`
+* Generates `AGENTS.md`
+* Standardizes every repo you create
+
+---
+
+# 📁 Recommended Project Structure
+
+```id="a2q8hz"
 project-root/
 │
 ├── tools/
@@ -56,185 +51,190 @@ project-root/
 
 ---
 
-# ⚡ Installation / Setup
+# ⚙️ Setup (Important)
 
-### 1. Clone this repository (your master toolkit)
+## 1. Clone this repository
 
-```
+```id="l2p7ci"
 git clone https://github.com/tepong32/workflow_version_manager.git
 ```
 
-### 2. Store it somewhere stable
+---
 
-Example:
+## 2. Set your template directory (RECOMMENDED)
 
+This allows `repo_bootstrap.py` to work from anywhere.
+
+---
+
+### 🪟 Windows (PowerShell)
+
+```id="1k5b0k"
+setx DEV_TOOLS_DIR "C:\Users\<you>\Desktop\GH\workflow_version_manager"
 ```
-~/dev-tools/
+
+Restart your terminal after running this.
+
+---
+
+### 🐧 Linux / WSL / Git Bash
+
+```id="b3g9ka"
+export DEV_TOOLS_DIR=~/Desktop/GH/workflow_version_manager
 ```
+
+For persistence:
+
+```id="u7v6mj"
+echo 'export DEV_TOOLS_DIR=~/Desktop/GH/workflow_version_manager' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+## 🔍 How it works
+
+`repo_bootstrap.py` resolves the template directory using:
+
+1. `DEV_TOOLS_DIR` (environment variable)
+2. Fallback: `~/Desktop/GH/workflow_version_manager`  *(this matches tEppy's workflow, you can change this default path on **`resolve_template_dir`**)*
 
 ---
 
 # 🚀 Usage
 
+---
+
 ## 🔹 Version Manager
 
-### Basic Usage
+### Basic
 
-```
-python version_manager.py "your message here"
+```id="r3x1lt"
+python version_manager.py "your message"
 ```
 
 ### With version bump
 
-```
-python version_manager.py "added request lifecycle" minor
+```id="d2h9zk"
+python version_manager.py "added lifecycle engine" minor
 ```
 
 ### With category
 
-```
-python version_manager.py "fixed validation bug" patch -c fix
+```id="y8k2va"
+python version_manager.py "fixed validation bug" -c fix
 ```
 
-### Dry run (preview only)
+### Dry run
 
-```
+```id="x6j1pw"
 python version_manager.py "test release" --dry-run
 ```
 
 ---
 
-## ⚡ Recommended Shortcut (Alias)
+## ⚡ Recommended Alias
 
-Example:
-
-```
-alias vm='python ~/dev-tools/version_manager.py'
+```id="k1p8zw"
+alias vm='python ~/Desktop/GH/workflow_version_manager/version_manager.py'
 ```
 
-Then just run:
+Then:
 
-```
+```id="n4c6jq"
 vm "added lifecycle engine" minor
 ```
 
 ---
 
-## 🔹 Auto Merge Tool
+## 🔹 Auto Merge
 
-### Safe mode (default)
+### Safe mode
 
-```
+```id="v2m5sa"
 python auto_merge.py
 ```
 
-✔ Resolves only safe files (e.g., VERSION, CHANGELOG)
-✔ Skips sensitive logic automatically
+### Aggressive mode
 
----
-
-### Aggressive mode (use carefully)
-
-```
+```id="t7p3nx"
 python auto_merge.py --unsafe
 ```
 
-⚠️ Resolves ALL conflicts — may overwrite important logic
-
 ---
 
-## 🔹 Repo Bootstrap (IMPORTANT)
-
-This is your **standard starting point for every new project**.
-
----
+## 🔹 Repo Bootstrap (Key Feature)
 
 ### Step-by-step
 
-```
+```id="z5n8pw"
 mkdir my-project
 cd my-project
 git init
 ```
 
-Then run:
+Then:
 
-```
-python ~/dev-tools/repo_bootstrap.py
+```id="e9c2hv"
+python ~/Desktop/GH/workflow_version_manager/repo_bootstrap.py
 ```
 
 ---
 
-### What it does
+### What happens
 
-* Creates `/tools/` folder
-* Copies:
-
-  * `version_manager.py`
-  * `auto_merge.py`
-* Generates `AGENTS.md`
-* Optionally creates initial commit
+* `/tools/` folder is created
+* `version_manager.py` and `auto_merge.py` are copied
+* `AGENTS.md` is generated
+* Optional initial commit is created
 
 ---
 
-### Recommended Alias
+## ⚡ Recommended Alias
 
-```
-alias bootstrap='python ~/dev-tools/repo_bootstrap.py'
+```id="s8x3jd"
+alias bootstrap='python ~/Desktop/GH/workflow_version_manager/repo_bootstrap.py'
 ```
 
-Then your workflow becomes:
+Usage:
 
-```
+```id="p4v7rq"
 git init
 bootstrap
 ```
 
 ---
 
-# 🧠 AGENTS.md (Why it matters)
+# 🧠 AGENTS.md
 
-`AGENTS.md` acts as a **policy file for AI-assisted development**.
+This file defines rules for AI-assisted development.
 
-Default rules include:
+### Default includes:
 
 * conserve tokens
 * avoid unnecessary verbosity
 * respect architecture
 * enforce safe merge behavior
 
-This keeps AI tools aligned with your workflow.
-
 ---
 
 # 🧩 Philosophy
 
-This toolkit is built around:
+This toolkit is built for:
 
-* **Consistency over convenience**
-* **Automation with safeguards**
-* **AI-assisted development readiness**
-
-It is intentionally:
-
-* simple
-* portable
-* extensible
+* **Consistency across projects**
+* **Safe automation**
+* **AI-assisted workflows**
+* **Minimal friction setup**
 
 ---
 
-# 🔮 Future Enhancements
+# 🔮 Future Direction
 
 * AI-aware merge conflict analysis
-* AGENTS.md-driven automation rules
-* smarter changelog generation
-* multi-project tooling support
-
----
-
-# 🤝 Contributing
-
-Feel free to fork and adapt to your workflow.
+* AGENTS.md-driven automation
+* CLI packaging (`vm`, `bootstrap`, etc.)
+* multi-project workflow orchestration
 
 ---
 
@@ -242,6 +242,6 @@ Feel free to fork and adapt to your workflow.
 
 This is not just a script collection.
 
-It’s the foundation of a **repeatable development workflow system**.
+It’s a **portable development workflow system**.
 
-Use it consistently, refine it over time, and it will compound your productivity.
+Use it consistently, refine it based on real usage, and it will scale with your projects.

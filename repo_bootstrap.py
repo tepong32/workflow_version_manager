@@ -7,8 +7,41 @@ import sys
 # CONFIG (edit once, reuse everywhere)
 # -------------------------------
 
-# 🔁 CHANGE THIS to your master tools folder
-TEMPLATE_DIR = Path.home() / "dev-tools"
+
+from pathlib import Path
+import os
+
+def resolve_template_dir():
+    """
+    Resolve where the dev tools template lives.
+    # CHANGE THIS to your master tools folder.
+    Priority:
+    1. ENV variable: DEV_TOOLS_DIR
+    2. Default GH folder: ~/Desktop/GH/workflow_version_manager
+    """
+
+    # 1. Environment variable override (recommended)
+    env_path = os.getenv("DEV_TOOLS_DIR")
+    if env_path:
+        path = Path(env_path)
+        if path.exists():
+            return path
+        else:
+            print(f"⚠️ DEV_TOOLS_DIR is set but path does not exist: {env_path}")
+
+    # 2. Default fallback ###### only for tEppy! 
+    default_path = Path.home() / "Desktop" / "GH" / "workflow_version_manager"
+    if default_path.exists():
+        return default_path
+
+    # 3. Fail clearly
+    print("❌ Could not locate dev tools template directory.")
+    print("👉 Set DEV_TOOLS_DIR environment variable or ensure default path exists.")
+    exit(1)
+
+
+TEMPLATE_DIR = resolve_template_dir()
+
 
 # Files inside TEMPLATE_DIR to copy into repo/tools/
 FILES_TO_COPY = [
