@@ -1,96 +1,247 @@
-# 🧭 Version Manager
+# 🚀 Workflow Version Manager
 
-> Automate versioning and changelog updates in your Git projects with a single Python script.
-
----
-
-### 🚀 Overview
-**Version Manager** is a command-line utility that enforces a clean, consistent release workflow. It automatically handles semantic version bumps, updates your changelog, and now commits, tags, and pushes the release to your remote repository—all in one atomic operation.
-
-This tool ensures a traceable version history with minimal manual effort.
+A lightweight, portable toolkit for **versioning, changelog generation, and workflow automation** — designed for developers who want fast, consistent, and repeatable release processes.
 
 ---
 
-### ✨ Key Features
-- 🔢 **Semantic Versioning** (`major`, `minor`, `patch`)
-- 🧾 **Categorized Changelog:** Auto-generated entries using headers like `✨ Added`, `🐞 Fixed`, etc.
-- 📦 **Multi-File Version Sync:** Updates version string in files like `VERSION`, `CHANGELOG.md`, and **`setup.py`** (configurable).
-- 🛡️ **Pre-Check Safety:** Prevents releases if the Git working directory is not clean.
-- 🚀 **Full Git Automation:** Automatically stages, commits, tags, and **pushes the release and tags** to your remote.
-- 🧪 **Dry-Run Mode** to safely preview changes.
-- 🎨 **Color-Coded Output** for easy process monitoring.
+## ✨ Core Features
+
+### 📦 Version Manager (`version_manager.py`)
+
+* Semantic versioning (patch / minor / major)
+* Auto-generates structured changelog entries
+* Categorized updates (feature, fix, refactor, etc.)
+* Updates version across multiple files
+* Git integration:
+
+  * add
+  * commit
+  * tag
+  * push
+* Dry-run mode for safe previews
 
 ---
 
-### ⚙️ Usage
+### ⚙️ Auto Merge Tool (`auto_merge.py`)
 
-#### Basic command
-```bash
-python version_manager.py "MESSAGE" [BUMP_TYPE] --category CATEGORY --dry-run
+* Safely resolves Git merge conflicts
+* Designed for AI-assisted workflows
+* Protects critical files by default
+* Optional aggressive mode for full auto-resolution
+
+---
+
+### 🧱 Repo Bootstrap (`repo_bootstrap.py`)
+
+* Instantly prepares any new repository
+* Copies your toolset into `/tools`
+* Generates a standard `AGENTS.md`
+* Ensures consistent development environment across projects
+
+---
+
+# 📁 Project Structure (Recommended)
+
+```
+project-root/
+│
+├── tools/
+│   ├── version_manager.py
+│   ├── auto_merge.py
+│
+├── VERSION
+├── CHANGELOG.md
+├── AGENTS.md
 ```
 
-#### Example
-```bash
-python version_manager.py "Initial release of version_manager.py" minor -c refactor -d 
+---
+
+# ⚡ Installation / Setup
+
+### 1. Clone this repository (your master toolkit)
+
 ```
-#### Multiline changelog example
-```
-python version_manager.py """
-Added new CLI options and improved validation.
-- Supports dry-run previews
-- Handles invalid VERSION formats gracefully
-""" patch -c refactor
-```
-#### Dry-run preview (no files modified)
-```
-python version_manager.py "Testing preview" patch --dry-run
+git clone https://github.com/tepong32/workflow_version_manager.git
 ```
 
-#### Arguments & Configuration
-|Argument |	Purpose | Example Value |
-|---------|---------|---------------|
-|"MESSAGE" | The required commit message and changelog text. | "Optimized API call handler" |
-|[BUMP_TYPE] | (Optional) Which version segment to increment. Defaults to patch. |	minor, major, patch|
-|--category (-c) CATEGORY |	(Optional) The header to use in CHANGELOG.md. Defaults to feature. | fix, refactor, chore, docs |
-|--dry-run (-d) | (Optional) Shows what would happen without writing files or running Git commands. | --dry-run |
+### 2. Store it somewhere stable
 
-### 🧰 Requirements
+Example:
 
-Python 3.8+
-
-colorama
-
-Install dependencies:
-```bash
-pip install colorama
+```
+~/dev-tools/
 ```
 
-### 🗂️ Configurable Files Managed
-The script is configured to update version strings in VERSION, CHANGELOG.md, and any files listed in the internal VERSIONED_FILES list (e.g., setup.py).
+---
 
-🪄 Example Workflow
-|Action | Command | Result |
-|-------|---------|--------|
-|New Feature Release | ```python version_manager.py "Implemented OAuth login" minor --category feature``` | "Bumps version (e.g., 1.2.3 → 1.3.0), updates files, commits, tags, and pushes." |
-|Bug Fix Release | ```python version_manager.py "Fixed memory leak in parser" --category fix``` | "Bumps patch version (default), updates files, commits, tags, and pushes." |
-|Multi-line Changelog | ```python version_manager.py """Added CLI options and improved validation.\n- Supports dry-run\n- Handles invalid VERSION formats""" patch``` | Uses multi-line string for detailed release notes. |
-|Safe Preview | ```python version_manager.py "Testing preview" minor --dry-run``` | Shows all file and Git actions without changing anything. |
+# 🚀 Usage
 
-### 🏷️ Full Git Integration
+## 🔹 Version Manager
 
-You no longer need to run manual push commands! (for versioning-related files only)
-On success, the script automatically:
-- Ensures the Git working directory is clean before running git commands.
-- Adds all versioned files (VERSION, CHANGELOG.md, setup.py, etc.).
-- Commits with your message and new version number.
-- Creates a Git tag (e.g., v1.2.0).
-- Pushes the new commit and the new tag to your remote repository.
+### Basic Usage
 
+```
+python version_manager.py "your message here"
+```
 
-### 📜 License
+### With version bump
 
-MIT License © 2025 — Created by tEppy™ (Cristino Agapito Jr)
+```
+python version_manager.py "added request lifecycle" minor
+```
 
-### 💡 Tip
+### With category
 
-Use this tool as the final step in your development process. Ensure all feature/bugfix code is committed before running this script, as it handles the final "release" commit.
+```
+python version_manager.py "fixed validation bug" patch -c fix
+```
+
+### Dry run (preview only)
+
+```
+python version_manager.py "test release" --dry-run
+```
+
+---
+
+## ⚡ Recommended Shortcut (Alias)
+
+Example:
+
+```
+alias vm='python ~/dev-tools/version_manager.py'
+```
+
+Then just run:
+
+```
+vm "added lifecycle engine" minor
+```
+
+---
+
+## 🔹 Auto Merge Tool
+
+### Safe mode (default)
+
+```
+python auto_merge.py
+```
+
+✔ Resolves only safe files (e.g., VERSION, CHANGELOG)
+✔ Skips sensitive logic automatically
+
+---
+
+### Aggressive mode (use carefully)
+
+```
+python auto_merge.py --unsafe
+```
+
+⚠️ Resolves ALL conflicts — may overwrite important logic
+
+---
+
+## 🔹 Repo Bootstrap (IMPORTANT)
+
+This is your **standard starting point for every new project**.
+
+---
+
+### Step-by-step
+
+```
+mkdir my-project
+cd my-project
+git init
+```
+
+Then run:
+
+```
+python ~/dev-tools/repo_bootstrap.py
+```
+
+---
+
+### What it does
+
+* Creates `/tools/` folder
+* Copies:
+
+  * `version_manager.py`
+  * `auto_merge.py`
+* Generates `AGENTS.md`
+* Optionally creates initial commit
+
+---
+
+### Recommended Alias
+
+```
+alias bootstrap='python ~/dev-tools/repo_bootstrap.py'
+```
+
+Then your workflow becomes:
+
+```
+git init
+bootstrap
+```
+
+---
+
+# 🧠 AGENTS.md (Why it matters)
+
+`AGENTS.md` acts as a **policy file for AI-assisted development**.
+
+Default rules include:
+
+* conserve tokens
+* avoid unnecessary verbosity
+* respect architecture
+* enforce safe merge behavior
+
+This keeps AI tools aligned with your workflow.
+
+---
+
+# 🧩 Philosophy
+
+This toolkit is built around:
+
+* **Consistency over convenience**
+* **Automation with safeguards**
+* **AI-assisted development readiness**
+
+It is intentionally:
+
+* simple
+* portable
+* extensible
+
+---
+
+# 🔮 Future Enhancements
+
+* AI-aware merge conflict analysis
+* AGENTS.md-driven automation rules
+* smarter changelog generation
+* multi-project tooling support
+
+---
+
+# 🤝 Contributing
+
+Feel free to fork and adapt to your workflow.
+
+---
+
+# 📌 Final Note
+
+This is not just a script collection.
+
+It’s the foundation of a **repeatable development workflow system**.
+
+Use it consistently, refine it over time, and it will compound your productivity.
