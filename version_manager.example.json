@@ -1,0 +1,13 @@
+{
+  "version_file": "VERSION",
+  "changelog_file": "CHANGELOG.md",
+  "version_files": ["pyproject.toml", "package.json"],
+  "documentation_files": ["README.md", "docs/RELEASE_GUIDE.md"],
+  "tag_prefix": "v",
+  "commit_template": "Release {tag}: {message}",
+  "categories": {
+    "feature": "Added",
+    "fix": "Fixed",
+    "security": "Security"
+  }
+}
