@@ -2,21 +2,21 @@
 
 ## Project context and documentation map
 
-Portable Python 3.11+ and Git release automation toolkit. version_manager.py is the entry point and version_manager/ holds reusable logic for discovery, versioning, release-document edits, commits and tags.
+Portable Python 3.8+ and Git release automation toolkit. version_manager.py is a single self-contained, standard-library-only file (copied verbatim into each repo's tools/ by repo_bootstrap.py); do not split it into a package. auto_merge.py is the companion conflict helper.
 
 ### Durable boundaries
 
-Remain repository-neutral: no hard-coded project identity, branch or milestone assumptions. Preserve preview/dry-run, confirmation, clean-tree protection and optional push behavior. Test release mutations only in disposable temporary repositories.
+Remain repository-neutral: no hard-coded project identity, branch or milestone assumptions. Never rewrite docs implicitly (only opt-in version_files). Preserve preview/dry-run, staged-only commits, release confirmation, failed-commit restoration and push/--no-push behavior. Test release mutations only in disposable temporary repositories.
 
 ### Development state
 
-The July 31 overhaul provides reusable release workflows. README.md documents current commands; no new release or product roadmap is introduced by continuity setup.
+v2.0.0 (2026-11-09) replaced the multi-file package with the universal single-file tool and rolled it out to all GH repos. README.md documents current commands.
 
 ### Read next
 
 - [README.md](README.md)
 - [CHANGELOG.md](CHANGELOG.md)
-- [version_manager.example.json](version_manager.example.json)
+- [versionmanager.example.json](versionmanager.example.json)
 - [tests/test_version_manager.py](tests/test_version_manager.py)
 - [Continuation entry point](CONTINUE.md)
 

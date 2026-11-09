@@ -1,0 +1,19 @@
+{
+  "version_file": "VERSION",
+  "changelog_file": "CHANGELOG.md",
+  "version_files": [
+    "pyproject.toml",
+    "package.json",
+    {"path": "project.godot", "pattern": "config/version=\"{version}\""}
+  ],
+  "tag_prefix": "v",
+  "commit_template": "Release {tag}: {message}",
+  "push": true,
+  "remote": "origin",
+  "require_clean": false,
+  "categories": {
+    "feature": "Added",
+    "fix": "Fixed",
+    "breaking": "Breaking Changes"
+  }
+}
