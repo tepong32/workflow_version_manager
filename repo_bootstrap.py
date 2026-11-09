@@ -1,55 +1,38 @@
+"""Bootstrap or update the shared workflow tools in a Git repository.
+
+Usage (from inside the target repository, or pass its path):
+    python <template>/repo_bootstrap.py [TARGET] [--update] [--no-agents] [--no-commit]
+
+* Copies the template tools into TARGET/tools/ (existing files are kept unless
+  --update is given, in which case outdated copies are replaced).
+* Runs ``tools/version_manager.py init`` so VERSION and CHANGELOG.md exist.
+* Creates a starter AGENTS.md when missing (skip with --no-agents).
+* Creates an initial commit only for a repository without any commits.
+
+Template location: $DEV_TOOLS_DIR, else the directory containing this script.
+"""
+
+from __future__ import annotations
+
+import argparse
+import filecmp
+import os
 import shutil
 import subprocess
-from pathlib import Path
 import sys
-
-# -------------------------------
-# CONFIG (edit once, reuse everywhere)
-# -------------------------------
-
-
 from pathlib import Path
-import os
 
-def resolve_template_dir():
-    """
-    Resolve where the dev tools template lives.
-    # CHANGE THIS to your master tools folder.
-    Priority:
-    1. ENV variable: DEV_TOOLS_DIR
-    2. Default GH folder: ~/Desktop/GH/workflow_version_manager
-    """
+for _stream in (sys.stdout, sys.stderr):
+    _reconfigure = getattr(_stream, "reconfigure", None)
+    if _reconfigure:
+        _reconfigure(encoding="utf-8", errors="replace")
 
-    # 1. Environment variable override (recommended)
-    env_path = os.getenv("DEV_TOOLS_DIR")
-    if env_path:
-        path = Path(env_path)
-        if path.exists():
-            return path
-        else:
-            print(f"⚠️ DEV_TOOLS_DIR is set but path does not exist: {env_path}")
-
-    # 2. Default fallback ###### only for tEppy! 
-    default_path = Path.home() / "Desktop" / "GH" / "workflow_version_manager"
-    if default_path.exists():
-        return default_path
-
-    # 3. Fail clearly
-    print("❌ Could not locate dev tools template directory.")
-    print("👉 Set DEV_TOOLS_DIR environment variable or ensure default path exists.")
-    exit(1)
-
-
-TEMPLATE_DIR = resolve_template_dir()
-
-
-# Files inside TEMPLATE_DIR to copy into repo/tools/
+# Files inside the template directory that are copied into <repo>/tools/.
 FILES_TO_COPY = [
     "auto_merge.py",
     "version_manager.py",
 ]
 
-# Default AGENTS.md template
 AGENTS_TEMPLATE = """# AGENTS.md
 
 ## Core Rules
@@ -62,125 +45,100 @@ AGENTS_TEMPLATE = """# AGENTS.md
 - Keep logic centralized (avoid duplication)
 - Fail safely (handle edge cases explicitly)
 
+## Release Workflow
+- Stage the intended changes, then checkpoint with
+  `python tools/version_manager.py "Summary" [patch|minor|major] -c <category>`
+- Preview first when unsure: `python tools/version_manager.py preview patch "Summary"`
+
 ## Merge Policy
 - Do not auto-resolve critical logic files
 - Prefer safe merges for VERSION and CHANGELOG
 - Review service/model changes manually
-
 """
 
-# -------------------------------
-# CORE FUNCTIONS
-# -------------------------------
 
-def ensure_git_repo():
-    """Ensure current directory is a git repo."""
-    try:
-        subprocess.run(
-            ["git", "rev-parse", "--is-inside-work-tree"],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-    except subprocess.CalledProcessError:
-        print("❌ Not a git repository. Run 'git init' first.")
-        sys.exit(1)
+def resolve_template_dir() -> Path:
+    """$DEV_TOOLS_DIR wins; otherwise the folder this script lives in."""
+    env_path = os.getenv("DEV_TOOLS_DIR")
+    if env_path:
+        path = Path(env_path)
+        if path.is_dir():
+            return path
+        print(f"warning: DEV_TOOLS_DIR does not exist: {env_path}; using script directory")
+    return Path(__file__).resolve().parent
 
 
-def copy_tools():
-    """Copy tool scripts into ./tools/"""
-    tools_dir = Path.cwd() / "tools"
+def git_root(target: Path) -> Path:
+    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=target,
+                            capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.exit(f"error: not a Git repository: {target} (run 'git init' first)")
+    return Path(result.stdout.strip())
+
+
+def copy_tools(template: Path, root: Path, update: bool) -> tuple[list[str], list[str]]:
+    tools_dir = root / "tools"
     tools_dir.mkdir(exist_ok=True)
-
-    copied = []
-    skipped = []
-
-    for file_name in FILES_TO_COPY:
-        src = TEMPLATE_DIR / file_name
-        dst = tools_dir / file_name
-
-        if not src.exists():
-            print(f"⚠️ Missing in template: {file_name}")
-            skipped.append(file_name)
+    changed, unchanged = [], []
+    for name in FILES_TO_COPY:
+        src, dst = template / name, tools_dir / name
+        if not src.is_file():
+            print(f"warning: missing in template: {name}")
             continue
-
         if dst.exists():
-            print(f"⏭️ Already exists (skipped): {file_name}")
-            skipped.append(file_name)
-            continue
+            if filecmp.cmp(src, dst, shallow=False):
+                unchanged.append(name)
+                continue
+            if not update:
+                print(f"kept existing tools/{name} (differs from template; use --update to replace)")
+                unchanged.append(name)
+                continue
+        shutil.copyfile(src, dst)
+        changed.append(name)
+        print(f"{'updated' if update and dst.exists() else 'copied'}: tools/{name}")
+    return changed, unchanged
 
-        try:
-            shutil.copy(src, dst)
-            copied.append(file_name)
-            print(f"✅ Copied: tools/{file_name}")
-        except Exception as e:
-            print(f"❌ Failed to copy {file_name}: {e}")
 
-    return copied, skipped
+def ensure_release_files(root: Path) -> None:
+    subprocess.run([sys.executable, str(root / "tools" / "version_manager.py"), "-C", str(root), "init"], check=False)
 
 
-def create_agents_md():
-    """Create AGENTS.md if not present."""
-    path = Path.cwd() / "AGENTS.md"
-
+def create_agents_md(root: Path) -> bool:
+    path = root / "AGENTS.md"
     if path.exists():
-        print("⏭️ AGENTS.md already exists (skipped)")
         return False
-
-    try:
-        path.write_text(AGENTS_TEMPLATE, encoding="utf-8")
-        print("✅ Created: AGENTS.md")
-        return True
-    except Exception as e:
-        print(f"❌ Failed to create AGENTS.md: {e}")
-        return False
+    path.write_text(AGENTS_TEMPLATE, encoding="utf-8")
+    print("created: AGENTS.md")
+    return True
 
 
-def initial_commit():
-    """Optional initial commit if repo is empty."""
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-        has_commit = result.returncode == 0
-
-        if has_commit:
-            print("⏭️ Repo already has commits (skipping initial commit)")
-            return
-
-        subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Initial project bootstrap"], check=True)
-
-        print("🚀 Initial commit created.")
-
-    except Exception as e:
-        print(f"⚠️ Could not create initial commit: {e}")
+def initial_commit(root: Path) -> None:
+    if subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True).returncode == 0:
+        return
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+    subprocess.run(["git", "commit", "-m", "Initial project bootstrap"], cwd=root, check=True)
+    print("created initial commit")
 
 
-# -------------------------------
-# MAIN
-# -------------------------------
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Bootstrap or update shared workflow tools in a repository.")
+    parser.add_argument("target", nargs="?", default=".", help="Repository path (default: current directory)")
+    parser.add_argument("--update", action="store_true", help="Replace tools that differ from the template")
+    parser.add_argument("--no-agents", action="store_true", help="Do not create AGENTS.md")
+    parser.add_argument("--no-commit", action="store_true", help="Never create an initial commit")
+    args = parser.parse_args()
 
-def main():
-    print("🚀 Bootstrapping repository...\n")
+    template = resolve_template_dir()
+    root = git_root(Path(args.target).resolve())
+    print(f"Template: {template}\nRepository: {root}\n")
 
-    ensure_git_repo()
+    changed, unchanged = copy_tools(template, root, args.update)
+    ensure_release_files(root)
+    agents = False if args.no_agents else create_agents_md(root)
+    if not args.no_commit:
+        initial_commit(root)
 
-    copied, skipped = copy_tools()
-    agents_created = create_agents_md()
-
-    # Summary
-    print("\n--- SUMMARY ---")
-    print(f"Tools copied: {len(copied)}")
-    print(f"Skipped: {len(skipped)}")
-    print(f"AGENTS.md created: {'Yes' if agents_created else 'No'}")
-
-    # Optional commit
-    initial_commit()
-
-    print("\n🎉 Repo is ready.\n")
+    print(f"\nTools changed: {len(changed)} | unchanged: {len(unchanged)} | AGENTS.md created: {'yes' if agents else 'no'}")
 
 
 if __name__ == "__main__":
