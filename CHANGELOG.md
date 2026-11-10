@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.1] - 2026-11-10
+### Fixed
+- Preserve leading spaces in git status --porcelain output
+
 ## [2.0.0] - 2026-11-09
 ### Refactored
 Universal single-file Version Manager
