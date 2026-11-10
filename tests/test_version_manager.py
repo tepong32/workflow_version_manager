@@ -159,7 +159,12 @@ class EndToEndTests(RepoTestCase):
         self.assertIn("MAJOR.MINOR.PATCH", err)
 
     def test_require_clean(self):
-        (self.repo / "dirty.txt").write_text("x\n", encoding="utf-8")
+        (self.repo / "README.md").write_text("unstaged edit\n", encoding="utf-8")
+        code, out, err = run_vm("-C", str(self.repo), "inspect", "--json")
+        self.assertEqual(code, 0, err)
+        facts = json.loads(out)
+        self.assertEqual(facts["staged"], [])
+        self.assertEqual(facts["unstaged"], ["README.md"])
         code, _, err = run_vm("-C", str(self.repo), "Patch", "--require-clean")
         self.assertEqual(code, 1)
         self.assertIn("require_clean", err)
